@@ -6,25 +6,28 @@ def weather(coordinates):
     data = get_weather(coordinates)
     return f'{data.location}\n\
 {data.description}\n\
-Temperature is 🌡 {data.temperature}°C\n\
-Feels like {data.temperature_feelings}°C\n\
-Max temperature {data.temperature_max}°C\n\
-Min temperature {data.temperature_min}°C'
+Температура воздуха 🌡 {data.temperature}°C\n\
+По ощущениям: {data.temperature_feelings}°C\n\
+Максимальная температура: {data.temperature_max}°C\n\
+Минимальная температура: {data.temperature_min}°C'
 
 def wind(coordinates):
     data = get_weather(coordinates)
-    return f'{data.wind_direction} wind 🌬 {data.wind_speed} m/s\n\
-Gust 💨 {data.wind_gust} m/s'
+    return f'Ветер {data.wind_direction}, скорость ветра {data.wind_speed} m/s🌬\n\
+С порывами до 💨 {data.wind_gust} m/s'
 
 
 def sun_time(coordinates):
     data = get_weather(coordinates)
-    return f'Sunrise 🌝: {data.sunrise.strftime("%H:%M")}\n\
-Sunset 🌛: {data.sunset.strftime("%H:%M")}'
+    return f'Рассвет 🌝: {data.sunrise.strftime("%H:%M")}\n\
+Закат 🌛: {data.sunset.strftime("%H:%M")}'
 
 
 def start():
-    return f"Hello, Send your GEO to continue"
+    return f"Привет, нажми кнопку ниже и выбери действие"
+
+def start_weather():
+    return f"Привет, для продолжения отправь свою геолокацию"
 
 
 def horoscope_today():
@@ -40,6 +43,10 @@ def horoscope_week():
     return f'{data}'
 
 def horoscope_month():
+    data = horoscopes_month
+    return f'{data}'
+
+def zodiac():
     data = horoscopes_month
     return f'{data}'
 

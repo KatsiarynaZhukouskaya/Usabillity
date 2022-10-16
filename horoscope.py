@@ -2,10 +2,6 @@ import requests
 from bs4 import BeautifulSoup as b
   
 
-# def get_sign(sign, period):
-# url = f"https://horo.mail.ru/{sign}/sagittarius/{period}/"
-
-
 url = "https://horo.mail.ru/prediction/sagittarius/today/"
 def parse_horoscope_today(url):
     r = requests.get(url)
@@ -25,7 +21,6 @@ def parse_horoscope_tomorrow(url):
     return horoscopes_tomorrow
 
 horoscopes_tomorrow = parse_horoscope_tomorrow(url)
-# print(horoscopes_tomorrow)
 
 url = "https://horo.mail.ru/prediction/sagittarius/week/"
 def parse_horoscope_week(url):
@@ -36,7 +31,6 @@ def parse_horoscope_week(url):
     return horoscopes_week
 
 horoscopes_week = parse_horoscope_week(url)
-# print(horoscopes_week)
 
 url = "https://horo.mail.ru/prediction/sagittarius/month/"
 def parse_horoscope_month(url):
@@ -47,4 +41,5 @@ def parse_horoscope_month(url):
     return horoscopes_month
 
 horoscopes_month = parse_horoscope_month(url)
-# print(horoscopes_month)
+
+

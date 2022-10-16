@@ -1,8 +1,10 @@
 from aiogram import Bot, Dispatcher, types, executor
-from messages import start, weather, wind, sun_time, horoscope_today, horoscope_tomorrow, horoscope_week, horoscope_month
-from inline_keyboard import ZODIAC, START, WEATHER, WIND, SUN_TIME, HELP, HOROSCOPE_TODAY, HOROSCOPE_TOMORROW, HOROSCOPE_WEEK, HOROSCOPE_MONTH, HOROSCOPE
+from messages import start, zodiac, start_weather, weather, wind, sun_time, horoscope_today, horoscope_tomorrow, horoscope_week, horoscope_month
+from keyboard import ZODIAC, START_WEATHER, WEATHER, WIND, SUN_TIME, HELP, HOROSCOPE_TODAY, HOROSCOPE_TOMORROW, HOROSCOPE_WEEK, HOROSCOPE_MONTH, HOROSCOPE
+from garden import keyboard_sets, buttons, month
 from weatherData import Coordinates
 from config import token
+from garden import get_keybord
 
 userCoordinates = {}
 
@@ -11,6 +13,20 @@ bot = Bot(token)
 dp = Dispatcher(bot)
 
 # обработка нажатий по инлайновым кнопакам
+
+# # callback_data='zodiac_aries')
+# # callback_data='zodiac_taurus')
+# # callback_data='zodiac_gemini')
+# # callback_data='zodiac_canceler')
+# # callback_data='zodiac_leo')
+# # callback_data='zodiac_vigro')
+# # callback_data='zodiac_libra')
+# # callback_data='zodiac_scorpio')
+# # callback_data='zodiac_sagitarius')
+# # callback_data='zodiac_capricorn')
+# # callback_data='zodiac_aquarius')
+# # callback_data='zodiac_pisces')
+
 @dp.callback_query_handler(text='zodiac')
 async def process_callback_zodiac(callback_query):
     await bot.answer_callback_query(callback_query.id)
@@ -66,7 +82,7 @@ async def process_callback_weather(callback_query):
                                text=weather(coord),
                                reply_markup=WEATHER)
     except:
-        await bot.send_message(callback_query.from_user.id, text=start(), reply_markup=START)
+        await bot.send_message(callback_query.from_user.id, text=start_weather(), reply_markup=START_WEATHER)
     
 @dp.callback_query_handler(text='wind')
 async def process_callback_wind(callback_query):
@@ -77,7 +93,7 @@ async def process_callback_wind(callback_query):
                                text=wind(coord),
                                reply_markup=WIND)   
     except:
-        await bot.send_message(callback_query.from_user.id, text=start(), reply_markup=START)
+        await bot.send_message(callback_query.from_user.id, text=start_weather(), reply_markup=START_WEATHER)
     
 @dp.callback_query_handler(text='sun_time')
 async def process_callback_sun_time(callback_query):
@@ -88,11 +104,10 @@ async def process_callback_sun_time(callback_query):
                                text=sun_time(coord),
                                reply_markup=SUN_TIME)   
     except:
-        await bot.send_message(callback_query.from_user.id, text=start(), reply_markup=START)
+        await bot.send_message(callback_query.from_user.id, text=start_weather(), reply_markup=START_WEATHER)
     
     
 # обработка команд
-
 @dp.message_handler(commands=['horoscope_today'])
 async def show_horoscope_today(message):
     await message.answer(text=horoscope_today(), reply_markup=HOROSCOPE_TODAY)
@@ -116,18 +131,18 @@ async def handle_location(message: types.Message):
     userCoordinates[message.from_user.id] = Coordinates(lat, lon)
     await message.answer("Great, now you can use all commands", reply_markup=HELP)
     
-
 @dp.message_handler(commands=['start'])
 async def show_start(message: types.Message):
-    await message.answer(text=start(), reply_markup=START)
-    
+    send_mes = f'<u><b>{message.from_user.first_name}</b></u>, бот умеет показывать погоду, гороскоп и советы по садоводству'
+    await bot.send_message(message.chat.id, send_mes, parse_mode='html')
+        
 @dp.message_handler(commands=['weather'])
 async def show_weather(message: types.Message):
     try:
         coord = userCoordinates[message.from_user.id]
         await message.answer(text=weather(coord), reply_markup=WEATHER)
     except:
-        await message.answer(text=start(), reply_markup=START)
+        await message.answer(text=start_weather(), reply_markup=START_WEATHER)
     
 @dp.message_handler(commands=['wind'])
 async def show_wind(message: types.Message):
@@ -135,7 +150,7 @@ async def show_wind(message: types.Message):
         coord = userCoordinates[message.from_user.id]
         await message.answer(text=wind(coord), reply_markup=WIND)
     except:
-        await message.answer(text=start(), reply_markup=START)
+        await message.answer(text=start_weather(), reply_markup=START_WEATHER)
 
 @dp.message_handler(commands=['sun_time'])
 async def show_sun_time(message: types.Message):
@@ -143,12 +158,8 @@ async def show_sun_time(message: types.Message):
         coord = userCoordinates[message.from_user.id]
         await message.answer(text=sun_time(coord), reply_markup=SUN_TIME)
     except:
-        await message.answer(text=start(), reply_markup=START)
-    
-@dp.message_handler(commands=['help'])
-async def show_help(message: types.Message):
-    await message.answer(text="Choose one bot's commands", reply_markup=HELP)
-    
+        await message.answer(text=start_weather(), reply_markup=START_WEATHER)
+
 @dp.message_handler(commands=['horoscope'])
 async def show_horoscope(message):
     await message.answer(text=f"{message.from_user.first_name}, выберите желаемый гороскоп:", reply_markup=HOROSCOPE)
@@ -159,11 +170,24 @@ async def show_zodiac(message):
     await message.answer(text=f"{message.from_user.first_name}, выберите свой знак зодиака:", reply_markup=ZODIAC)
 
 
-@dp.message_handler(commands=['hello'])
-async def show_hello(message):
-    send_mes = f"Hello, <b>{message.from_user.first_name}</b>! Have a good day!"
-    await bot.send_message(message.chat.id, send_mes, parse_mode='html')
+@dp.message_handler(commands=["garden"])
+async def garden(message: types.Message):
+    send_mes = f"Привет, <b>{message.from_user.first_name}</b>! Нажми на кнопку с указанием месяца и ты увидишь, какие работы наобходимо провети в соответствующий период года"
+    await bot.send_message(message.chat.id, send_mes, parse_mode='html', reply_markup=keyboard_sets)
+
+@dp.message_handler(commands=["garden"])
+async def garden_advice(message: types.Message):
+    read = await sql_read()
+    for r in read:
+        send_mes = f" <b>{message.from_user.first_name}, основные работы</b>!"
+        await bot.send_message(message.from_user.id, send_mes, f'{r[2]}, {r[1]}')
+        
+        
+import sqlite3 as sq 
+async def sql_read(message):
+    return cur.execute('SELECT * FROM database').fetchall()
 
 
+  
 if __name__ == "__main__":
     executor.start_polling(dp)
