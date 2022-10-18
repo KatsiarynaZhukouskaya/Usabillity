@@ -50,4 +50,4 @@ def zodiac():
     data = horoscopes_month
     return f'{data}'
 
-   
+  
